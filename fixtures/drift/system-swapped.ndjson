@@ -1,0 +1,7 @@
+{"resourceType":"Patient","id":"pat-001","identifier":[{"system":"http://hl7.org/fhir/sid/us-mbi","value":"1EG4TE5MK73"}],"name":[{"family":"Alvarez","given":["Marisol"]}],"gender":"female","birthDate":"1948-03-11"}
+
+{"resourceType":"Patient","id":"pat-002","identifier":[{"system":"urn:oid:2.16.840.1.113883.4.1","value":"000-00-0002"}],"name":[{"family":"Okafor","given":["Daniel"]}],"gender":"male","birthDate":"1955-11-02"}
+{"resourceType":"Encounter","id":"enc-100","status":"finished","class":{"system":"http://example.org/local-codes","code":"OFFICE"},"subject":{"reference":"Patient/pat-001"},"period":{"start":"2026-09-10T14:00:00-04:00"}}
+{"resourceType":"Encounter","id":"enc-101","status":"cancelled","class":{"system":"http://example.org/local-codes","code":"OFFICE"},"subject":{"reference":"Patient/pat-002"},"period":{"start":"2026-09-24T09:30:00-04:00"}}
+
+{"resourceType":"Observation","id":"obs-200","status":"final","code":{"coding":[{"system":"http://loinc.org","code":"4548-4","display":"Hemoglobin A1c"}]},"subject":{"reference":"Patient/pat-001"},"valueQuantity":{"value":7.1,"unit":"%"}}

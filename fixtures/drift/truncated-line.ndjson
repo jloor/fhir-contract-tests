@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"pat-003","identifier":[{"system":"http://hl7.org/fhir/sid/us-mbi","value":"2FH5UF6NL84"}],"name":[{"family":"Reyes"}],"gender":"female"

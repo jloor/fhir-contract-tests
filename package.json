@@ -1,0 +1,14 @@
+{
+  "name": "fhir-contract-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Contract tests for US Core FHIR payloads. No dependencies.",
+  "scripts": {
+    "test": "node --test test/conformance.test.ts test/drift.test.ts",
+    "check": "node src/cli.ts"
+  },
+  "engines": {
+    "node": ">=22.6"
+  }
+}
