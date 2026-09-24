@@ -19,11 +19,31 @@ export interface Violation {
   why?: string;
 }
 
-/** Walk a dotted path. `[]` means "every element of this array". */
+/**
+ * Walk a dotted path.
+ *
+ *   `foo.bar`     plain traversal
+ *   `foo[].bar`   every element of the array at `foo`
+ *   `value[x]`    a FHIR CHOICE TYPE: whichever of valueQuantity, valueString,
+ *                 valueCodeableConcept and so on is actually present
+ *
+ * Choice types are the thing people forget. `Observation.value[x]` is the
+ * result of the test, and it arrives under a different key depending on what
+ * kind of result it is. A resolver that does not know this reports a missing
+ * required element on a perfectly good record.
+ */
 function resolve(node: unknown, parts: string[]): unknown[] {
   if (parts.length === 0) return [node];
   const [head, ...rest] = parts;
   if (node === null || node === undefined) return [];
+
+  if (head.endsWith("[x]")) {
+    const stem = head.slice(0, -3);
+    if (typeof node !== "object") return [];
+    const matches = Object.keys(node as Record<string, unknown>)
+      .filter((k) => k.length > stem.length && k.startsWith(stem) && /^[A-Z]/.test(k[stem.length]));
+    return matches.flatMap((k) => resolve((node as Record<string, unknown>)[k], rest));
+  }
 
   if (head.endsWith("[]")) {
     const key = head.slice(0, -2);
@@ -54,6 +74,11 @@ function checkElement(res: Resource, rule: ElementRule): Violation[] {
   for (const v of values) {
     if (v === null || v === undefined) {
       if (required) out.push({ ...base, kind: "missing", detail: "present but null" });
+      continue;
+    }
+    if (rule.type === "any") {
+      // Present is the whole assertion. A choice type's shape depends on which
+      // variant arrived, so checking it here would be checking the wrong thing.
       continue;
     }
     if (rule.type === "array") {

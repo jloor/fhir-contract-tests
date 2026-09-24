@@ -17,7 +17,9 @@ export interface ElementRule {
   path: string;
   cardinality: Cardinality;
   /** Primitive shape expected at the leaf. */
-  type: "string" | "code" | "object" | "array" | "dateTime";
+  /** `any` means the element must be PRESENT but its shape varies, which is the
+   *  correct rule for a choice type: valueQuantity is an object, valueString is not. */
+  type: "string" | "code" | "object" | "array" | "dateTime" | "any";
   /** If set, the value must be one of these. */
   valueSet?: string[];
   /** If set, a Coding at this path must use this system. */
@@ -72,6 +74,8 @@ export const PROFILES: ProfileRule[] = [
       { path: "code.coding[].system", cardinality: "1..1", type: "string",
         why: "A code with no system is the single most common cause of a silent mapping failure." },
       { path: "subject.reference", cardinality: "1..1", type: "string" },
+      { path: "value[x]", cardinality: "1..1", type: "any",
+        why: "A choice type. The result arrives as valueQuantity, valueString, valueCodeableConcept and others, so a resolver that only looks for 'value' reports a missing result on a perfectly good record." },
     ],
   },
 ];

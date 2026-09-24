@@ -4,7 +4,7 @@
 No dependencies, no install, no network.
 
 ```bash
-npm test                              # 10 tests, about 140ms
+npm test                              # 14 tests, about 200ms
 node src/cli.ts path/to/file.ndjson   # exits non-zero if the contract is violated
 ```
 
@@ -74,7 +74,7 @@ actually break:
 |---|---|---|
 | `Patient` | identifier present with a system and value, name, gender in the value set | An identifier with no system is a number with no meaning. Vendors have shipped `F` where `female` was required. |
 | `Encounter` | status in the value set, class from the standard code system, a subject reference | `cancelled` and `entered-in-error` are the two statuses a downstream process must never ignore. |
-| `Observation` | status, a code with a coding system, a subject reference | A code with no system is the most common cause of a silent mapping failure. |
+| `Observation` | status, a code with a coding system, a subject reference, and a result under `value[x]` | A code with no system is the most common cause of a silent mapping failure. |
 
 Adding a rule, or a vendor quirk, is an edit to that table rather than a patch to the
 engine.
@@ -95,6 +95,17 @@ the way a vendor changes it:
 Each test proves the change is caught. One of them proves something else that matters just
 as much: **a single mutation produces a single violation** rather than lighting up every
 rule. A report that fails everything is useless at two in the morning.
+
+## Choice types
+
+`Observation.value[x]` is the result of the test, and it arrives under a different key depending on
+what kind of result it is: `valueQuantity` for a number with a unit, `valueString` for free text,
+`valueCodeableConcept` for a coded finding.
+
+**A resolver that only looks for a key called `value` reports a missing required element on a
+perfectly good record.** The path syntax supports `value[x]` directly, and
+[`test/choice-type.test.ts`](test/choice-type.test.ts) covers the object variant, the primitive
+variant, an absent result, and a near miss that should not count.
 
 ## NDJSON handling
 
@@ -119,6 +130,7 @@ comes back.
 - Synthetic fixtures. Nothing here has touched real patient data.
 - Value sets are inlined rather than fetched from a terminology server.
 - It asserts shape, not clinical correctness. A structurally perfect record can still be wrong.
+- Profile slicing and `contained` resources are not addressable in the path syntax.
 
 ## License
 
