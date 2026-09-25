@@ -4,7 +4,7 @@
 No dependencies, no install, no network.
 
 ```bash
-npm test                              # 14 tests, about 200ms
+npm test                              # 24 tests, about 250ms
 node src/cli.ts path/to/file.ndjson   # exits non-zero if the contract is violated
 ```
 
@@ -106,6 +106,48 @@ what kind of result it is: `valueQuantity` for a number with a unit, `valueStrin
 perfectly good record.** The path syntax supports `value[x]` directly, and
 [`test/choice-type.test.ts`](test/choice-type.test.ts) covers the object variant, the primitive
 variant, an absent result, and a near miss that should not count.
+
+## Two modes, and the second one is the useful one
+
+**Declared contracts** (`src/profile.ts`) work when a spec exists. US Core says what a
+`Patient` must contain, so the rules can be written down in advance.
+
+**Captured contracts** (`src/baseline.ts`) work when no spec exists, which is the situation
+with every proprietary EHR billing API. There is no conformance suite, no versioning
+guarantee and no deprecation policy, and that is exactly where charges, payments and payer
+sequence live. So the contract gets **captured from a known-good sample** and frozen:
+
+```bash
+npm run baseline capture athenaone.claims samples/day1.ndjson > claims.baseline.json
+npm run baseline check  claims.baseline.json samples/today.ndjson
+```
+
+Exit codes are **0 clean, 1 warnings, 2 a failure**, so a scheduler can treat 1 as tell a
+human and 2 as stop the load.
+
+### Severity is the point
+
+A harness that fails on every difference gets muted within a month, and a muted harness
+catches nothing.
+
+| change | severity | why |
+|---|---|---|
+| a field appears | **warn** | vendors add fields constantly. Failing here trains people to ignore the check |
+| a value set gains a member | **warn** | might be a new valid state, might be silent data loss. A human decides |
+| a field is renamed | **fail** + warn | shows as a removal plus an addition. Nothing can know they are the same field, but seeing both together is enough |
+| a type changes | **fail** | `"185.00"` becoming `185.00` breaks casts and comparisons quietly |
+| a required field goes missing | **fail** | the join key disappears |
+
+### What the inference can and cannot do
+
+It reads **presence** as a fraction of the sample, **types** seen at each path, and **value
+sets** where a field looks enumerated.
+
+**It is only as good as the sample's variety.** A field with one observed value is treated
+as a constant rather than a value set, deliberately: inferring a rule from a single
+observation produces a false positive on the next payload. A field with four distinct values
+in two hundred records will be read as enumerated whether or not it is, so capture from a
+sample that spans real variation.
 
 ## NDJSON handling
 

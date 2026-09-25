@@ -1,0 +1,84 @@
+{
+  "name": "athenaone.claims",
+  "capturedAt": "2026-09-25T23:54:23.544Z",
+  "sampleSize": 5,
+  "fields": [
+    {
+      "path": "allowableamount",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "billedamount",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "chargeamount",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "claimid",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "claimstatus",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "diagnosiscode1",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "modifier1",
+      "types": [
+        "string"
+      ],
+      "presence": 0.4
+    },
+    {
+      "path": "patientid",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "primaryinsuranceid",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "procedurecode",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    },
+    {
+      "path": "servicedate",
+      "types": [
+        "string"
+      ],
+      "presence": 1
+    }
+  ]
+}

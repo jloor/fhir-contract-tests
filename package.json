@@ -5,8 +5,9 @@
   "type": "module",
   "description": "Contract tests for US Core FHIR payloads. No dependencies.",
   "scripts": {
-    "test": "node --test test/conformance.test.ts test/drift.test.ts test/choice-type.test.ts",
-    "check": "node src/cli.ts"
+    "test": "node --test test/conformance.test.ts test/drift.test.ts test/choice-type.test.ts test/baseline.test.ts",
+    "check": "node src/cli.ts",
+    "baseline": "node src/baseline-cli.ts"
   },
   "engines": {
     "node": ">=22.6"
